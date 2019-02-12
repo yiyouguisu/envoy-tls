@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  front-envoy:
+    build:
+      context: ./
+      dockerfile: Dockerfile-frontenvoy
+    networks:
+      - envoy-tls-network
+    expose:
+      - "80"
+      - "443"
+      - "9901"
+    ports:
+      - "8000:80"
+      - "8443:443"
+      - "9901:9901"
+
+  servicea:
+    build:
+      context: ./
+      dockerfile: Dockerfile-service
+    networks:
+      envoy-tls-network:
+        aliases:
+          - serviceA
+    environment:
+      - SERVICE_NAME=1
+    expose:
+      - "80"
+
+  serviceb:
+    build:
+      context: ./
+      dockerfile: Dockerfile-service
+    networks:
+      envoy-tls-network:
+        aliases:
+          - serviceB
+    environment:
+      - SERVICE_NAME=2
+    expose:
+      - "80"
+networks:
+  envoy-tls-network: {}
